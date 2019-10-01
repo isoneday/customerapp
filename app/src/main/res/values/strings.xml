@@ -17,5 +17,6 @@
     <string name="str_ok">oke</string>
     <string name="str_cancel">cancel</string>
     <string name="login">login</string>
+    <string name="title_activity_maps">Map</string>
 
 </resources>

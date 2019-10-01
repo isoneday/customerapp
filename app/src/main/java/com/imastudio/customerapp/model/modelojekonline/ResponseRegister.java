@@ -1,4 +1,4 @@
-package com.imastudio.customerapp.model;
+package com.imastudio.customerapp.model.modelojekonline;
 
 import com.google.gson.annotations.SerializedName;
 
