@@ -43,6 +43,31 @@ public class InitRetrofit {
 
 
     }
+    public static Retrofit setInitMakanan() {
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+           OkHttpClient client = new OkHttpClient.Builder()
+                   .addInterceptor(interceptor)
+                   .retryOnConnectionFailure(true)
+                   .connectTimeout(45, TimeUnit.SECONDS)
+                   .build();
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
+
+        return new Retrofit.Builder().baseUrl(MyContants.BASE_MAKANANURL)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+
+    }
+    public static RestApi getInstanceMakanan(){
+
+        return setInitMakanan().create(RestApi.class);
+
+
+    }
     public static Retrofit setInitGoogle() {
 
         return new Retrofit.Builder().baseUrl(MyContants.BASE_MAP_URL)

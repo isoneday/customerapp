@@ -6,7 +6,7 @@ package com.imastudio.customerapp.helper;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
-public class Preferrence {
+public class    Preferrence {
 
     public static final String PREFS_NAME = "AOP_PREFS";
     public static final String PREFS_KEY = "AOP_PREFS_String";

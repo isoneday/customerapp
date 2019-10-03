@@ -1,7 +1,10 @@
 package com.imastudio.customerapp;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -13,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.imastudio.customerapp.helper.HeroHelper;
 import com.imastudio.customerapp.helper.SessionManager;
@@ -47,6 +51,24 @@ public class LoginRegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_register);
         ButterKnife.bind(this);
+        cekPermission();
+    }
+
+    private void cekPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                    && checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
+                    != PackageManager.PERMISSION_GRANTED
+                    ) {
+                requestPermissions(
+                        new String[]{Manifest.permission.READ_PHONE_STATE,
+                              },
+                        110);
+
+
+            }
+            return;
+        }
     }
 
     @OnClick({R.id.btnSignIn, R.id.btnRegister})

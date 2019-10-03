@@ -8,10 +8,14 @@
          location permissions for the 'MyLocation' functionality.
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".helper.Initial"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -19,7 +23,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -32,10 +36,34 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".SearchMapActivity"></activity>
+        <activity
+            android:name=".helper.MapsActivity"
+            android:label="@string/title_activity_maps"></activity>
+        <activity android:name=".EditDeleteMakananActivity" />
+
+        <service
+            android:name=".helper.ForegroundService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity
+            android:name=".MakananActivity"
+            android:label="@string/title_activity_makanan"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".HistoryActivity" />
+        <activity
+            android:name=".DetailDriverActivity"
+            android:label="@string/title_activity_detail_driver" />
+        <activity android:name=".WaitingDriverActivity" />
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
+        <activity android:name=".SearchMapActivity" />
         <activity
             android:name=".MapsActivity"
-            android:label="@string/title_activity_maps"></activity>
+            android:label="@string/title_activity_maps" />
         <activity
             android:name=".SplashScreenActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar">
@@ -45,7 +73,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginRegisterActivity"></activity>
+        <activity android:name=".LoginRegisterActivity" />
         <activity android:name=".MainActivity" />
     </application>
 

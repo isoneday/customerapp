@@ -1,5 +1,6 @@
 package com.imastudio.customerapp;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -17,9 +18,6 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.location.places.AutocompleteFilter;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -27,15 +25,20 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.libraries.places.compat.AutocompleteFilter;
+import com.google.android.libraries.places.compat.Place;
+import com.google.android.libraries.places.compat.ui.PlaceAutocomplete;
 import com.imastudio.customerapp.helper.DirectionMapsV2;
 import com.imastudio.customerapp.helper.GPSTracker;
 import com.imastudio.customerapp.helper.HeroHelper;
 import com.imastudio.customerapp.helper.MyContants;
+import com.imastudio.customerapp.helper.SessionManager;
 import com.imastudio.customerapp.model.modelmap.Distance;
 import com.imastudio.customerapp.model.modelmap.Duration;
 import com.imastudio.customerapp.model.modelmap.LegsItem;
 import com.imastudio.customerapp.model.modelmap.ResponseMap;
 import com.imastudio.customerapp.model.modelmap.RoutesItem;
+import com.imastudio.customerapp.model.modelojekonline.ResponseInsertBooking;
 import com.imastudio.customerapp.network.InitRetrofit;
 
 import java.io.IOException;
@@ -78,6 +81,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private double latTujuan;
     private double lonTujuan;
     private String nameLocationTujuan;
+    private SessionManager manager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,8 +167,65 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 setLokasi(MyContants.LOKASITUJUAN);
                 break;
             case R.id.requestorder:
+                insertBooking();
                 break;
         }
+    }
+
+    private void insertBooking() {
+        ProgressDialog loading = ProgressDialog.show(this,"Proses Insert Booking",
+                "Loading . . .");
+        manager = new SessionManager(this);
+        String iduser = manager.getIdUser();
+        String token = manager.getToken();
+        String latitudeawal = String.valueOf(latawal);
+        String longitudeawal = String.valueOf(lonawal);
+        String latitudetujuan = String.valueOf(latTujuan);
+        String longitudetujuan = String.valueOf(lonTujuan);
+        String awal = lokasiawal.getText().toString();
+        String tujuan =lokasitujuan.getText().toString();
+        String catatan = edtcatatan.getText().toString();
+        String jarak = txtjarak.getText().toString();
+        String device = HeroHelper.getDeviceUUID(this);
+        InitRetrofit.getInstance().insertBooking(
+                iduser,
+                latitudeawal,
+                longitudeawal,
+                awal,
+                latitudetujuan,
+                longitudetujuan,
+                tujuan,
+                catatan,
+                jarak,
+                token,
+                device
+
+        ).enqueue(new Callback<ResponseInsertBooking>() {
+            @Override
+            public void onResponse(Call<ResponseInsertBooking> call, Response<ResponseInsertBooking> response) {
+                if (response.isSuccessful()){
+                    String result =response.body().getResult();
+                    String msg = response.body().getMsg();
+                    loading.dismiss();
+                    if (result.equals("true")){
+                        Toast.makeText(MapsActivity.this,msg, Toast.LENGTH_SHORT).show();
+                        int idbooking = response.body().getIdBooking();
+                        Intent i = new Intent(MapsActivity.this,WaitingDriverActivity.class);
+                        i.putExtra(MyContants.IDBOOKING, idbooking);
+                        startActivity(i);
+                    }else{
+                        Toast.makeText(MapsActivity.this,msg, Toast.LENGTH_SHORT).show();
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseInsertBooking> call, Throwable t) {
+                Toast.makeText(MapsActivity.this,"gagal koneksi"+t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                loading.dismiss();
+            }
+        });
     }
 
     private void setLokasi(int kodeLokasi) {
@@ -248,7 +309,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 distance.getText()))*5000;
                         txtharga.setText(String.valueOf(harga));
                         txtdurasi.setText(duration.getText());
-                        txtjarak.setText(distance.getText());
+                        double jarak = distance.getValue() / 1000;
+                        txtjarak.setText(String.valueOf(jarak));
                         DirectionMapsV2 mapsV2 = new DirectionMapsV2(MapsActivity.this);
                         String point = data.get(0).getOverviewPolyline().getPoints();
                         mapsV2.gambarRoute(mMap,point);

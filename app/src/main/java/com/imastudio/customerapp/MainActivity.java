@@ -155,10 +155,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onHistory(View view) {
-
+        startActivity(new Intent(this,HistoryActivity.class));
     }
 
     public void onGoride(View view) {
     startActivity(new Intent(this,MapsActivity.class));
+    }
+
+    public void onMakanan(View view) {
+        startActivity(new Intent(this,MakananActivity.class));
     }
 }
